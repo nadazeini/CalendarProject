@@ -1,8 +1,10 @@
 package calendarProject;
 
 import java.awt.Container;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.Desktop;
+import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -20,8 +22,8 @@ public class EventFrame extends JFrame{
 	    JButton weekButton = new JButton("Week");
 	    JButton monthButton = new JButton("Month");
 	    JButton agendaButton = new JButton("Agenda");
-	    final JButton fileButton = new JButton("From File");
-		fileButton.addMouseListener(new MouseListener() {
+	    final JButton fileButton = new JButton("From File"); //why final?
+	fileButton.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -51,8 +53,23 @@ public class EventFrame extends JFrame{
 				
 			}
 			
-		});
-	    
+		}); 
+		
+	    fileButton.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		if (Desktop.isDesktopSupported()) {
+	    		    try {
+	    		    	if(System.getProperty("os.name").toUpperCase().contains("MAC"))
+						Desktop.getDesktop().open(new File("/users/"));
+	    		    	else
+	    		    		Desktop.getDesktop().open(new File("C:\\"));
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+	    		}
+	    	}
+	    });
 	    JPanel panel1 = new JPanel();
 	    panel1.add(dayButton);
 	    panel1.add(weekButton);
