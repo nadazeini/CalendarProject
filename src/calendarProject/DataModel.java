@@ -30,6 +30,6 @@ public class DataModel{
 	
 	@SuppressWarnings("unchecked")
 	public ArrayList<Event> getEvents(){
-		return (ArrayList<Event>) events.clone();
+		return events.clone();
 	}
 }
