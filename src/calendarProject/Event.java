@@ -1,21 +1,35 @@
 package calendarProject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Event implements Comparable<Event>{
+	public static final Map<String, Integer> daysAndWeek = new HashMap<>();
 	private String eventName;
 	private int year;
 	private int startingMonth;
 	private int endingMonth;
-	private String dayOfWeek;
+	private ArrayList<Integer> days;
 	private int startingTime;
 	private int endingTime;
 	
 	public Event(String eventName, int year, int startingMonth, int endingMonth,
 				 String dayOfWeek, int startingTime, int endingTime) {
+		daysAndWeek.put("M", 1);
+		daysAndWeek.put("T", 2);
+		daysAndWeek.put("W", 3);
+		daysAndWeek.put("R", 4);
+		daysAndWeek.put("F", 5);
+		daysAndWeek.put("A", 6);
+		daysAndWeek.put("S", 7);
 		this.eventName = eventName;
 		this.year = year;
 		this.startingMonth = startingMonth;
 		this.endingMonth = endingMonth;
-		this.dayOfWeek = dayOfWeek;
+		for(int i = 0; i < dayOfWeek.length(); i++) {
+			days.add(daysAndWeek.get(dayOfWeek.substring(i, i + 1)));
+		}
 		this.startingTime = startingTime;
 		this.endingTime = endingTime;
 	}
@@ -36,8 +50,8 @@ public class Event implements Comparable<Event>{
 		return startingMonth;
 	}
 	
-	public String dayOfWeek() {
-		return dayOfWeek;
+	public ArrayList<Integer> days() {
+		return days;
 	}
 	
 	public int startingTime() {
@@ -68,7 +82,7 @@ public class Event implements Comparable<Event>{
 				else if(compareStartingMonth > 0)
 					return 1;
 				else {
-					int compareDayOfWeek = Character.compare(dayOfWeek.charAt(0), event.dayOfWeek.charAt(0));
+					int compareDayOfWeek = Integer.compare(days.get(0), days.get(0));
 					if(compareDayOfWeek < 0)
 						return -1;
 					else if(compareDayOfWeek > 0)
