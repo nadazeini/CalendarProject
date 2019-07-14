@@ -187,9 +187,7 @@ public class CalendarFrame extends JFrame{
 		int currentMonthLength = firstDay.getMonth().length(firstDay.isLeapYear());
 		for(int i = 0; i < currentMonthLength; i++) {
 			JButton a = new JButton(Integer.toString(firstDay.getDayOfMonth()));
-			if(firstDay.getYear() == LocalDate.now().getYear() 
-			&& firstDay.getMonthValue() == LocalDate.now().getMonthValue() 
-			&& firstDay.getDayOfMonth() == LocalDate.now().getDayOfMonth()) {
+			if(firstDay.equals(LocalDate.now()) {
 				a.setForeground(Color.RED);
 				a.setFont(new Font("ROMAN_BASELINE", Font.ITALIC, 12));
 			}
