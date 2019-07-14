@@ -22,12 +22,13 @@ public class CalendarFrame extends JFrame{
 	private static LocalDate firstDay;
 	private static LocalDate click;
 	private EventFrame eventFrame;
+	private DataModel dataModel;
 	public static final String DAY_OF_WEEK = "SMTWTFA";
 	
 	private static final long serialVersionUID = 1L;
 
-	public CalendarFrame(EventFrame eventFrame) {
-		this.eventFrame = eventFrame;
+	public CalendarFrame(DataModel dataModel) {
+		this.dataModel = dataModel;
 		click = LocalDate.now();
 		firstDay = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1);
 		
@@ -261,7 +262,6 @@ public class CalendarFrame extends JFrame{
 						}
 						firstDay = LocalDate.of(firstDay.getYear(), firstDay.getMonth(), 1);
 						click = LocalDate.of(firstDay.getYear(), firstDay.getMonth(), Integer.parseInt(button.getText()));
-						System.out.println(click);
 						setDate(panel4, dateButton);
 					}
 				}
@@ -285,7 +285,6 @@ public class CalendarFrame extends JFrame{
 
 				@Override
 				public void mouseExited(MouseEvent e) {
-					System.out.println(firstDay + " " + click + " " + Integer.parseInt(button.getText()));
 					if(!((firstDay.getYear() == LocalDate.now().getYear() 
 					   && firstDay.getMonthValue() == LocalDate.now().getMonthValue() 
 					   && Integer.parseInt(button.getText()) == LocalDate.now().getDayOfMonth()) 
@@ -298,5 +297,13 @@ public class CalendarFrame extends JFrame{
 		}
 		panel4.revalidate();
 		panel4.repaint();
+	}
+	
+	public void setEventFrame(EventFrame frame) {
+		eventFrame = frame;
+	}
+	
+	public LocalDate getCurrentClick() {
+		return click;
 	}
 }
