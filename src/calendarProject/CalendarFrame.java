@@ -23,12 +23,14 @@ public class CalendarFrame extends JFrame{
 	private static LocalDate click;
 	private EventFrame eventFrame;
 	private DataModel dataModel;
+	private EventFormatter formatter;
 	public static final String DAY_OF_WEEK = "SMTWTFA";
 	
 	private static final long serialVersionUID = 1L;
 
-	public CalendarFrame(DataModel dataModel) {
+	public CalendarFrame(DataModel dataModel, EventFormatter formatter) {
 		this.dataModel = dataModel;
+		this.formatter = formatter;
 		click = LocalDate.now();
 		firstDay = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1);
 		
@@ -262,6 +264,7 @@ public class CalendarFrame extends JFrame{
 						click = LocalDate.of(firstDay.getYear(), firstDay.getMonth(), Integer.parseInt(button.getText()));
 						setDate(panel4, dateButton);
 					}
+					eventFrame.stateChanged(null);
 				}
 
 				@Override
