@@ -16,6 +16,7 @@ public class Event implements Comparable<Event>{
 	
 	public Event(String eventName, int year, int startingMonth, int endingMonth,
 				 String dayOfWeek, int startingTime, int endingTime) {
+		days = new ArrayList<>();
 		daysAndWeek.put("M", 1);
 		daysAndWeek.put("T", 2);
 		daysAndWeek.put("W", 3);
@@ -50,15 +51,15 @@ public class Event implements Comparable<Event>{
 		return endingMonth;
 	}
 	
-	public ArrayList<Integer> days() {
+	public ArrayList<Integer> getDays() {
 		return days;
 	}
 	
-	public int startingTime() {
+	public int getStartingTime() {
 		return startingTime;
 	}
 	
-	public int endingTime() {
+	public int getEndingTime() {
 		return endingTime;
 	}
 
