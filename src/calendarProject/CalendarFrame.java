@@ -3,6 +3,7 @@ package calendarProject;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -10,29 +11,39 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 public class CalendarFrame extends JFrame{
-	private static LocalDate firstDay;
-	private static LocalDate click;
+	private LocalDate firstDay;
+	private LocalDate click;
 	private EventFrame eventFrame;
+	private CalendarFrame cf;
 	private DataModel dataModel;
-	private EventFormatter formatter;
+	private JPanel panel4;
+	private JButton dateButton;
 	public static final String DAY_OF_WEEK = "SMTWTFA";
 	
 	private static final long serialVersionUID = 1L;
 
-	public CalendarFrame(DataModel dataModel, EventFormatter formatter) {
+	public CalendarFrame(DataModel dataModel) {
 		this.dataModel = dataModel;
-		this.formatter = formatter;
 		click = LocalDate.now();
 		firstDay = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1);
+		dateButton = new JButton();
+		panel4 = new JPanel();
 		
 		JButton todayButton = new JButton("Today");
 		JButton createButton = new JButton("CREATE EVENT");
@@ -40,7 +51,7 @@ public class CalendarFrame extends JFrame{
 		createButton.setBorderPainted(false);
 		createButton.setBackground(Color.RED);
 		createButton.setForeground(Color.WHITE);
-		JButton dateButton = new JButton();
+		
 		JButton nextMonthButton = new JButton("Next Month");
 		JButton previousMonthButton = new JButton("Previous Month");
 		JButton previousDayButton = new JButton("Previous Day");
@@ -64,11 +75,10 @@ public class CalendarFrame extends JFrame{
 		panel3.add(dateButton);
 		panel3.add(previousMonthButton);
 		panel3.add(nextMonthButton);
-		
-		JPanel panel4 = new JPanel();
+	
 		panel4.setLayout(new GridLayout(7, 7));
 		
-		setDate(panel4, dateButton);
+		setDate();
 		
 		ActionListener eventListener = new ActionListener() {
 
@@ -82,20 +92,24 @@ public class CalendarFrame extends JFrame{
 					firstDay = firstDay.plusMonths(1);
 					firstDay = LocalDate.of(firstDay.getYear(), firstDay.getMonth(), 1);
 				}
-				setDate(panel4, dateButton);
+				setDate();
 			}
 			
 		};
 		previousMonthButton.addActionListener(eventListener);
 		nextMonthButton.addActionListener(eventListener);
 		
-		createButton.addMouseListener(new MouseListener() {
+		MouseListener mouseListener = new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				createButton.setBackground(Color.BLUE);
 				createButton.setForeground(Color.BLACK);
 				mouseReleased(e);
+				createEvent(createButton, createButton.getMouseListeners());
+				while(createButton.getMouseListeners().length != 0) {
+					createButton.removeMouseListener(createButton.getMouseListeners()[0]);
+				}
 			}
 
 			@Override
@@ -112,17 +126,16 @@ public class CalendarFrame extends JFrame{
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
+				createButton.setBackground(Color.BLACK);
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
+				createButton.setBackground(Color.RED);
 			}
 			
-		});
+		};
+		createButton.addMouseListener(mouseListener);
 		
 		todayButton.addActionListener(new ActionListener() {
 
@@ -130,7 +143,7 @@ public class CalendarFrame extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				firstDay = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1);
 				click = LocalDate.now();
-				setDate(panel4, dateButton);
+				setDate();
 			}
 			
 		});
@@ -146,7 +159,7 @@ public class CalendarFrame extends JFrame{
 					click = click.plusDays(1);
 				}
 				firstDay = LocalDate.of(click.getYear(), click.getMonth(), 1);
-				setDate(panel4, dateButton);
+				setDate();
 			}
 			
 		};
@@ -158,13 +171,13 @@ public class CalendarFrame extends JFrame{
 		add(panel3);
 		add(panel4);
 		
-		
+		setTitle("Calendar");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    pack();
 	    setVisible(true);
 	}
 
-	public void setDate(JPanel panel4, JButton dateButton) {
+	public void setDate() {
 		panel4.removeAll();
 		for(int i = 0; i < DAY_OF_WEEK.length(); i++) {
 			JButton a = new JButton(DAY_OF_WEEK.substring(i, i + 1));
@@ -221,7 +234,6 @@ public class CalendarFrame extends JFrame{
 			&& firstDay.getMonthValue() == click.getMonthValue()) {
 				for(JButton button: buttons) {
 					if(button.getForeground().equals(Color.BLACK) 
-					&& !button.getForeground().equals(Color.RED)
 					&& Integer.parseInt(button.getText()) == click.getDayOfMonth()) {
 						button.setForeground(Color.BLUE);
 						button.setBorderPainted(true);
@@ -262,7 +274,7 @@ public class CalendarFrame extends JFrame{
 						}
 						firstDay = LocalDate.of(firstDay.getYear(), firstDay.getMonth(), 1);
 						click = LocalDate.of(firstDay.getYear(), firstDay.getMonth(), Integer.parseInt(button.getText()));
-						setDate(panel4, dateButton);
+						setDate();
 					}
 					eventFrame.stateChanged(null);
 				}
@@ -300,11 +312,120 @@ public class CalendarFrame extends JFrame{
 		panel4.repaint();
 	}
 	
+	private void createEvent(JButton createButton, MouseListener[] mouseListeners) {
+		JFrame frame = new JFrame("Create Event");
+		frame.setLocation(550, 0);
+		frame.addWindowListener(new WindowAdapter() {
+			
+			@Override
+            public void windowClosing(WindowEvent e)
+            {
+				for(MouseListener listener: mouseListeners)
+					createButton.addMouseListener(listener);
+            }
+		});
+		final Container contentPane2 = frame.getContentPane();
+		frame.setLayout(new BoxLayout(contentPane2, BoxLayout.Y_AXIS));
+		JPanel namePanel = new JPanel();
+		JPanel datePanel = new JPanel();
+		JPanel errorPanel = new JPanel();
+		JPanel buttonPanel = new JPanel();
+		
+		JLabel nameLabel = new JLabel("Add title: ");
+		JTextField nameField = new JTextField(10);
+		JButton date = new JButton();
+		JTextArea errorTextArea = new JTextArea();
+		errorTextArea.setForeground(Color.RED);
+		errorTextArea.setEditable(false);
+		date.setText(click.toString());
+		date.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CreateEventFrame cef = new CreateEventFrame(click, cf, date);
+				cef.setCloseReference(cef);
+				cef.addWindowFocusListener(new WindowFocusListener() {
+
+					@Override
+					public void windowGainedFocus(WindowEvent e) {
+						
+					}
+
+					@Override
+					public void windowLostFocus(WindowEvent e) {
+						cef.dispose();
+					}
+					
+				});
+			}
+			
+		});
+		Integer hour[] = new Integer[24];
+		for(int i = 0; i < hour.length; i++) {
+			hour[i] = i;
+		}
+		JComboBox<Integer> startingTimeBox = new JComboBox<>(hour);
+		JComboBox<Integer> endingTimeBox = new JComboBox<>(hour);
+		JButton addButton = new JButton("Add");
+		addButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String name = nameField.getText();
+				if(name.length() == 0) {
+					errorTextArea.setText("Please enter a event name.");
+					errorPanel.setVisible(true);
+				}
+				else {
+					errorPanel.setVisible(false);
+					for(MouseListener listener: mouseListeners)
+						createButton.addMouseListener(listener);
+					frame.dispose();
+				}
+			}
+			
+		});
+		
+		namePanel.add(nameLabel);
+		namePanel.add(nameField);
+		datePanel.add(date);
+		datePanel.add(startingTimeBox);
+		datePanel.add(endingTimeBox);
+		errorPanel.add(errorTextArea);
+		errorPanel.setVisible(false);
+		buttonPanel.add(addButton);
+		
+		frame.setPreferredSize(new Dimension(300, 200));
+		frame.add(namePanel);
+		frame.add(datePanel);
+		frame.add(errorPanel);
+		frame.add(buttonPanel);
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	    frame.pack();
+	    frame.setVisible(true);
+	}
+	
 	public void setEventFrame(EventFrame frame) {
 		eventFrame = frame;
 	}
 	
+	public EventFrame getEventFrame() {
+		return eventFrame;
+	}
+	
 	public LocalDate getCurrentClick() {
 		return click;
+	}
+	
+	public void setCurrentClick(LocalDate click) {
+		this.click = click;
+	}
+	
+	public void setFirstDay(LocalDate firstDay) {
+		this.firstDay = firstDay;
+	}
+	
+	public void setCalendarReference(CalendarFrame cf) {
+		this.cf = cf;
 	}
 }
