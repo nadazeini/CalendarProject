@@ -47,7 +47,7 @@ public class Event implements Comparable<Event>{
 	}
 	
 	public int getEndingMonth() {
-		return startingMonth;
+		return endingMonth;
 	}
 	
 	public ArrayList<Integer> days() {
