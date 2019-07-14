@@ -1,7 +1,7 @@
 package calendarProject;
 
+import java.util.ArrayList;
+
 public interface EventFormatter {
-	String formatHeader();
 	String formatEvent(Event event);
-	String formatFooter();
 }
