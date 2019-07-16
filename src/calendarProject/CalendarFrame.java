@@ -144,6 +144,7 @@ public class CalendarFrame extends JFrame{
 				firstDay = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1);
 				click = LocalDate.now();
 				setDate();
+				eventFrame.stateChanged(null);
 			}
 			
 		});
@@ -364,38 +365,61 @@ public class CalendarFrame extends JFrame{
 		for(int i = 0; i < hour.length; i++) {
 			hour[i] = i;
 		}
+		JLabel startingTimeLabel = new JLabel("Staring Time:");
 		JComboBox<Integer> startingTimeBox = new JComboBox<>(hour);
+		JLabel endingTimeLabel = new JLabel("Ending Time:");
 		JComboBox<Integer> endingTimeBox = new JComboBox<>(hour);
 		JButton addButton = new JButton("Add");
 		addButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				int start = (Integer) startingTimeBox.getSelectedItem();
+				int end = (Integer) endingTimeBox.getSelectedItem();
+				
 				String name = nameField.getText();
 				if(name.length() == 0) {
 					errorTextArea.setText("Please enter a event name.");
 					errorPanel.setVisible(true);
 				}
+				else if(start == end) {
+					errorTextArea.setText("Starting time and ending time can't be equal.");
+					errorPanel.setVisible(true);
+				}
+				else if(start > end && end != 0){
+					errorTextArea.setText("Starting time can't be greater than ending time if ending time is not zero.");
+					errorPanel.setVisible(true);
+				}
 				else {
-					errorPanel.setVisible(false);
-					for(MouseListener listener: mouseListeners)
-						createButton.addMouseListener(listener);
-					frame.dispose();
+					Event newEvent = new Event(name, click.getYear(), click.getMonthValue(), 0
+							                 , Integer.toString(click.getDayOfMonth()), start, end);
+					if(dataModel.checkConflict(newEvent)) {
+						errorTextArea.setText("Time conflict, please reenter the time.");
+						errorPanel.setVisible(true);
+					}
+					else {
+						dataModel.addEvent(newEvent);
+						errorPanel.setVisible(false);
+						for(MouseListener listener: mouseListeners)
+							createButton.addMouseListener(listener);
+						frame.dispose();
+					}
 				}
 			}
-			
 		});
 		
 		namePanel.add(nameLabel);
 		namePanel.add(nameField);
 		datePanel.add(date);
+		datePanel.add(startingTimeLabel);
 		datePanel.add(startingTimeBox);
+		datePanel.add(endingTimeLabel);
 		datePanel.add(endingTimeBox);
 		errorPanel.add(errorTextArea);
 		errorPanel.setVisible(false);
 		buttonPanel.add(addButton);
 		
-		frame.setPreferredSize(new Dimension(300, 200));
+		frame.setPreferredSize(new Dimension(500, 250));
 		frame.add(namePanel);
 		frame.add(datePanel);
 		frame.add(errorPanel);
@@ -407,6 +431,7 @@ public class CalendarFrame extends JFrame{
 	
 	public void setEventFrame(EventFrame frame) {
 		eventFrame = frame;
+		eventFrame.stateChanged(null);
 	}
 	
 	public EventFrame getEventFrame() {
