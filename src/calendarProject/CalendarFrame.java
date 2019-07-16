@@ -3,7 +3,6 @@ package calendarProject;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -11,35 +10,28 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 public class CalendarFrame extends JFrame{
 	private LocalDate firstDay;
 	private LocalDate click;
 	private EventFrame eventFrame;
 	private CalendarFrame cf;
-	private DataModel dataModel;
 	private JPanel panel4;
 	private JButton dateButton;
+	@SuppressWarnings("unused")
+	private DataModel dataModel;
 	public static final String DAY_OF_WEEK = "SMTWTFA";
 	
 	private static final long serialVersionUID = 1L;
 
 	public CalendarFrame(DataModel dataModel) {
-		this.dataModel = dataModel;
 		click = LocalDate.now();
 		firstDay = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1);
 		dateButton = new JButton();
@@ -106,7 +98,8 @@ public class CalendarFrame extends JFrame{
 				createButton.setBackground(Color.BLUE);
 				createButton.setForeground(Color.BLACK);
 				mouseReleased(e);
-				createEvent(createButton, createButton.getMouseListeners());
+				@SuppressWarnings("unused")
+				CreateEventFrame cef = new CreateEventFrame(click, cf, dataModel, createButton, createButton.getMouseListeners());
 				while(createButton.getMouseListeners().length != 0) {
 					createButton.removeMouseListener(createButton.getMouseListeners()[0]);
 				}
@@ -311,122 +304,6 @@ public class CalendarFrame extends JFrame{
 		}
 		panel4.revalidate();
 		panel4.repaint();
-	}
-	
-	private void createEvent(JButton createButton, MouseListener[] mouseListeners) {
-		JFrame frame = new JFrame("Create Event");
-		frame.setLocation(550, 0);
-		frame.addWindowListener(new WindowAdapter() {
-			
-			@Override
-            public void windowClosing(WindowEvent e)
-            {
-				for(MouseListener listener: mouseListeners)
-					createButton.addMouseListener(listener);
-            }
-		});
-		final Container contentPane2 = frame.getContentPane();
-		frame.setLayout(new BoxLayout(contentPane2, BoxLayout.Y_AXIS));
-		JPanel namePanel = new JPanel();
-		JPanel datePanel = new JPanel();
-		JPanel errorPanel = new JPanel();
-		JPanel buttonPanel = new JPanel();
-		
-		JLabel nameLabel = new JLabel("Add title: ");
-		JTextField nameField = new JTextField(10);
-		JButton date = new JButton();
-		JTextArea errorTextArea = new JTextArea();
-		errorTextArea.setForeground(Color.RED);
-		errorTextArea.setEditable(false);
-		date.setText(click.toString());
-		date.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				CreateEventFrame cef = new CreateEventFrame(click, cf, date);
-				cef.setCloseReference(cef);
-				cef.addWindowFocusListener(new WindowFocusListener() {
-
-					@Override
-					public void windowGainedFocus(WindowEvent e) {
-						
-					}
-
-					@Override
-					public void windowLostFocus(WindowEvent e) {
-						cef.dispose();
-					}
-					
-				});
-			}
-			
-		});
-		Integer hour[] = new Integer[24];
-		for(int i = 0; i < hour.length; i++) {
-			hour[i] = i;
-		}
-		JLabel startingTimeLabel = new JLabel("Staring Time:");
-		JComboBox<Integer> startingTimeBox = new JComboBox<>(hour);
-		JLabel endingTimeLabel = new JLabel("Ending Time:");
-		JComboBox<Integer> endingTimeBox = new JComboBox<>(hour);
-		JButton addButton = new JButton("Add");
-		addButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int start = (Integer) startingTimeBox.getSelectedItem();
-				int end = (Integer) endingTimeBox.getSelectedItem();
-				
-				String name = nameField.getText();
-				if(name.length() == 0) {
-					errorTextArea.setText("Please enter a event name.");
-					errorPanel.setVisible(true);
-				}
-				else if(start == end) {
-					errorTextArea.setText("Starting time and ending time can't be equal.");
-					errorPanel.setVisible(true);
-				}
-				else if(start > end && end != 0){
-					errorTextArea.setText("Starting time can't be greater than ending time if ending time is not zero.");
-					errorPanel.setVisible(true);
-				}
-				else {
-					Event newEvent = new Event(name, click.getYear(), click.getMonthValue(), 0
-							                 , Integer.toString(click.getDayOfMonth()), start, end);
-					if(dataModel.checkConflict(newEvent)) {
-						errorTextArea.setText("Time conflict, please reenter the time.");
-						errorPanel.setVisible(true);
-					}
-					else {
-						dataModel.addEvent(newEvent);
-						errorPanel.setVisible(false);
-						for(MouseListener listener: mouseListeners)
-							createButton.addMouseListener(listener);
-						frame.dispose();
-					}
-				}
-			}
-		});
-		
-		namePanel.add(nameLabel);
-		namePanel.add(nameField);
-		datePanel.add(date);
-		datePanel.add(startingTimeLabel);
-		datePanel.add(startingTimeBox);
-		datePanel.add(endingTimeLabel);
-		datePanel.add(endingTimeBox);
-		errorPanel.add(errorTextArea);
-		errorPanel.setVisible(false);
-		buttonPanel.add(addButton);
-		
-		frame.setPreferredSize(new Dimension(500, 250));
-		frame.add(namePanel);
-		frame.add(datePanel);
-		frame.add(errorPanel);
-		frame.add(buttonPanel);
-	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	    frame.pack();
-	    frame.setVisible(true);
 	}
 	
 	public void setEventFrame(EventFrame frame) {
