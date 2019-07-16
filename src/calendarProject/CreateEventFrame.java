@@ -25,5 +25,16 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class CreateEventFrame extends JFrame{
+	private LocalDate firstDay;
+	private LocalDate click;
+	private CalendarFrame cf;
+	@SuppressWarnings("unused")
+	private DataModel dataModel;
+	public static final String DAY_OF_WEEK = "SMTWTFA";
+	
+	private static final long serialVersionUID = 1L;
 
+	public CreateEventFrame(LocalDate click, CalendarFrame cf, DataModel dataModel, JButton createButton, MouseListener[] mouseListeners) {
+	
+	}
 }
