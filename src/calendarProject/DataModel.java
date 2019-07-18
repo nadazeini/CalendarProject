@@ -29,6 +29,11 @@ public class DataModel{
 		listeners.add(listener);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public ArrayList<Event> getEvents(){
+		return (ArrayList<Event>) events.clone();
+	}
+	
 	public String format(ArrayList<Event> events, EventFormatter formatter, LocalDate currentDay) {
 		String result = "";
 		result += formatter.formatHeader(currentDay);
