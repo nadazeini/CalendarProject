@@ -23,10 +23,14 @@ public class CalendarFrame extends JFrame{
 	private LocalDate click;
 	private EventFrame eventFrame;
 	private CalendarFrame cf;
+	private JPanel panel1;
 	private JPanel panel4;
 	private JButton dateButton;
 	@SuppressWarnings("unused")
 	private DataModel dataModel;
+	private String view;
+	private JButton previousButton;
+	private JButton nextButton;
 	public static final String DAY_OF_WEEK = "SMTWTFA";
 	
 	private static final long serialVersionUID = 1L;
@@ -36,6 +40,9 @@ public class CalendarFrame extends JFrame{
 		firstDay = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1);
 		dateButton = new JButton();
 		panel4 = new JPanel();
+		view = null;
+		previousButton = new JButton("Previous Day view");
+		nextButton = new JButton("Next Day view");
 		
 		JButton todayButton = new JButton("Today");
 		JButton createButton = new JButton("CREATE EVENT");
@@ -46,16 +53,15 @@ public class CalendarFrame extends JFrame{
 		
 		JButton nextMonthButton = new JButton("Next Month");
 		JButton previousMonthButton = new JButton("Previous Month");
-		JButton previousDayButton = new JButton("Previous Day");
-		JButton nextDayButton = new JButton("Next Day");
+
 		
 	    final Container contentPane = getContentPane();
 	    setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
 	    
-		JPanel panel1 = new JPanel();
+		panel1 = new JPanel();
 		panel1.add(todayButton, BorderLayout.WEST);
-		panel1.add(nextDayButton, BorderLayout.EAST);
-		panel1.add(previousDayButton, BorderLayout.EAST);
+		panel1.add(previousButton, BorderLayout.EAST);
+		panel1.add(nextButton, BorderLayout.EAST);
 		
 		JPanel panel2 = new JPanel();
 		panel2.setLayout(new FlowLayout());
@@ -138,6 +144,9 @@ public class CalendarFrame extends JFrame{
 				click = LocalDate.now();
 				setDate();
 				eventFrame.stateChanged(null);
+				System.out.println(eventFrame.getResult());
+				eventFrame.setTextArea();
+				eventFrame.setResult();
 			}
 			
 		});
@@ -146,19 +155,22 @@ public class CalendarFrame extends JFrame{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(((JButton) e.getSource()) == previousDayButton) {
+				if(((JButton) e.getSource()) == previousButton) {
 					click = click.minusDays(1);
 				}
-				else if(((JButton) e.getSource()) == nextDayButton) {
+				else if(((JButton) e.getSource()) == nextButton) {
 					click = click.plusDays(1);
 				}
 				firstDay = LocalDate.of(click.getYear(), click.getMonth(), 1);
 				setDate();
+				eventFrame.stateChanged(null);
+				eventFrame.setTextArea();
+				eventFrame.setResult();
 			}
 			
 		};
-		previousDayButton.addActionListener(dayListener);
-		nextDayButton.addActionListener(dayListener);
+		previousButton.addActionListener(dayListener);
+		nextButton.addActionListener(dayListener);
 		
 		add(panel1);
 		add(panel2);
@@ -271,6 +283,8 @@ public class CalendarFrame extends JFrame{
 						setDate();
 					}
 					eventFrame.stateChanged(null);
+					eventFrame.setTextArea();
+					eventFrame.setResult();
 				}
 
 				@Override
@@ -309,6 +323,8 @@ public class CalendarFrame extends JFrame{
 	public void setEventFrame(EventFrame frame) {
 		eventFrame = frame;
 		eventFrame.stateChanged(null);
+		eventFrame.setTextArea();
+		eventFrame.setResult();
 	}
 	
 	public EventFrame getEventFrame() {
@@ -329,5 +345,21 @@ public class CalendarFrame extends JFrame{
 	
 	public void setCalendarReference(CalendarFrame cf) {
 		this.cf = cf;
+	}
+	
+	public void setView(String view) {
+		this.view = view;
+		if(this.view.equalsIgnoreCase("day")) {
+			previousButton.setText("Previous day view");
+			nextButton.setText("Next day view");
+		}
+		else if(this.view.equalsIgnoreCase("week")) {
+			previousButton.setText("Previous week view");
+			nextButton.setText("Next week view");
+		}
+		else if(this.view.equalsIgnoreCase("month")) {
+			previousButton.setText("Previous month view");
+			nextButton.setText("Next month view");
+		}
 	}
 }
