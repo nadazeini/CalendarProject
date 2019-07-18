@@ -43,8 +43,8 @@ public class DataModel{
 			for(Event event: events) {
 				result += formatter.formatEvent(event);
 			}
+			result += formatter.formatFooter();
 		}
-		result += formatter.formatFooter();
 		return result;
 	}
 	
