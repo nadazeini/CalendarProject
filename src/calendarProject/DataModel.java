@@ -1,14 +1,66 @@
-package calendarProject;
+ package calendarProject;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-
+ import java.util.Collections;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-public class DataModel{
-	private ArrayList<Event> events;
+	
+	/**
+	 * 
+	 * 
+	 *defines hashMap as underlying data structure 
+	 *to retrieve dates of events and vice versa easily
+	 */
+	public class DataModel{
+		
+
+		HashMap<LocalDate,ArrayList> allEvents= new HashMap<>();
+		private ArrayList<ChangeListener> listeners;
+
+		public DataModel (HashMap allEvents) {
+			this.allEvents=allEvents;
+			listeners = new ArrayList<ChangeListener>();
+		}
+		/**
+		 * adds events to hashMap allEvents
+		 * @param date
+		 * @param events
+		 */
+		public void addEvents(LocalDate date,ArrayList events) {
+			allEvents.put(date, events)
+	;		
+			
+		}
+		/**
+		 * removes event from hashMap
+		 * @param dateOfEvent
+		 * @param eventToRemove
+		 */
+		public void removeEvent (LocalDate dateOfEvent,Event eventToRemove) {
+		allEvents.remove(dateOfEvent, eventToRemove);
+
+	}
+	
+	/**
+	 * 
+	 * @return hashMap
+	 */
+	public HashMap getHashMap() {
+		return allEvents;
+	}
+	
+	public void addChangeListener(ChangeListener listener) {
+		listeners.add(listener);
+	}
+	
+	}
+	
+	
+	/*private ArrayList<Event> events;
 	private ArrayList<ChangeListener> listeners;
 	
 	public DataModel() {
@@ -100,3 +152,4 @@ public class DataModel{
 		}
 	}
 }
+*/
