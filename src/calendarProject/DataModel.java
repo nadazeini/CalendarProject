@@ -8,10 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-	
-	/**
-	 * 
-	 * @author Nada El Zeini
+	/*
 	 *defines hashMap as underlying data structure 
 	 *to retrieve dates of events and vice versa easily
 	 */
@@ -58,6 +55,7 @@ import java.util.HashMap;
 	}
 	
 	}
+	
 	
 	
 	/*private ArrayList<Event> events;
@@ -152,4 +150,6 @@ import java.util.HashMap;
 		}
 	}
 }
+<<<<<<< HEAD
 */
+
