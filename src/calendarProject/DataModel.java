@@ -12,35 +12,43 @@ import java.util.HashMap;
 	 *defines hashMap as underlying data structure 
 	 *to retrieve dates of events and vice versa easily
 	 */
-	public class DataModel{
-		
+	package calendarProject;
 
-		HashMap<LocalDate,ArrayList> allEvents= new HashMap<>();
-		private ArrayList<ChangeListener> listeners;
+import java.util.ArrayList;
+import java.util.Collections;
 
-		public DataModel (HashMap allEvents) {
-			this.allEvents=allEvents;
-			listeners = new ArrayList<ChangeListener>();
-		}
-		/**
-		 * adds events to hashMap allEvents
-		 * @param date
-		 * @param events
-		 */
-		public void addEvents(LocalDate date,ArrayList events) {
-			allEvents.put(date, events)
-	;		
-			
-		}
-		/**
-		 * removes event from hashMap
-		 * @param dateOfEvent
-		 * @param eventToRemove
-		 */
-		public void removeEvent (LocalDate dateOfEvent,Event eventToRemove) {
-		allEvents.remove(dateOfEvent, eventToRemove);
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
+
+public class DataModel{
+	private ArrayList<Event> events;
+	private ArrayList<ChangeListener> listeners;
+	
+	public DataModel() {
+		events = new ArrayList<Event>();
+		listeners = new ArrayList<ChangeListener>();
 	}
+	
+	public void addEvent(Event event) {
+		events.add(event);
+		Collections.sort(events);
+		ChangeEvent e = new ChangeEvent(this);
+		for(ChangeListener listener: listeners) {
+			listener.stateChanged(e);
+		}
+	}
+	
+	public void addChangeListener(ChangeListener listener) {
+		listeners.add(listener);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ArrayList<Event> getEvents(){
+		return (ArrayList<Event>) events.clone();
+	}
+}
+
 	
 	/**
 	 * 
